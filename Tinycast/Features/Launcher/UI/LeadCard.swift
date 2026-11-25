@@ -10,7 +10,7 @@ private struct LeadCardChrome: ViewModifier {
         content
             .background(shape.fill(Theme.Colors.cardFill))
             .background(shape.fill(fill))
-            .armedHover($hovered)
+            .armedHover($hovered, selected: selected, cornerRadius: metrics.radius.card)
     }
 
     private var shape: RoundedRectangle {

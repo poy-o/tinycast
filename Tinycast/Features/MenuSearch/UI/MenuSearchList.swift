@@ -143,7 +143,7 @@ private struct MenuSearchRow: View {
             RoundedRectangle(cornerRadius: metrics.radius.row, style: .continuous)
                 .fill(fill)
         )
-        .armedHover($hovered)
+        .armedHover($hovered, selected: selected)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(item.title)
         .accessibilityValue(item.displayPath)

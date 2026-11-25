@@ -77,6 +77,8 @@ final class PaletteState {
     var menuQuery = ""
     /// Fired when `menuOpen` flips, so the panel can hide the caret without a focus swap.
     @ObservationIgnored var onMenuOpenChanged: ((Bool) -> Void)?
+    /// Fired when hover disarms, so active row trails cancel without waiting for a SwiftUI pass.
+    @ObservationIgnored var onHoverDisarmed: (() -> Void)?
     /// A fresh presentation resets a long popover to the row it opens with.
     private(set) var menuPresentationToken = UUID()
 
@@ -246,5 +248,6 @@ final class PaletteState {
         guard hoverHighlightArmed else { return }
         hoverHighlightArmed = false
         hoverDisarmToken = UUID()
+        onHoverDisarmed?()
     }
 }

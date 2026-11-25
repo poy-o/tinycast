@@ -332,6 +332,7 @@ enum Theme {
         static let dropGuide: TimeInterval = 0.24
         static let tooltipDelay: TimeInterval = 0.4
         static let hover: TimeInterval = 0.12
+        static let hoverTrail: TimeInterval = 0.070
         static let menuChevron: TimeInterval = 0.34
         static let copyFeedback: TimeInterval = 1.2
         static let chatFooter: TimeInterval = 0.12

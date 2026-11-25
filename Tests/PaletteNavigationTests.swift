@@ -31,6 +31,7 @@ struct PaletteNavigationTests {
         scrollingDisarms()
         driftDoesNotRearm()
         theDisarmTokenClearsLitRows()
+        hoverTrailPathSampling()
 
         let vm = searchingLauncher()
         expect(!vm.canGoBack, "a prepared screen is a root with nothing behind it")
@@ -337,5 +338,29 @@ struct PaletteNavigationTests {
         state.notePointerMoved(to: CGPoint(x: rest.x + 40, y: rest.y))
         expect(
             state.hoverDisarmToken == quiet, "and arming is silent: pointer movement never rebuilds")
+    }
+
+    static func hoverTrailPathSampling() {
+        let end = CGPoint(x: 100, y: 200)
+        expect(
+            HoverTrailPath.samplePoints(from: nil, to: end) == [end],
+            "without a previous position, sampling returns only the current point")
+
+        let nearby = CGPoint(x: 100, y: 185)
+        expect(
+            HoverTrailPath.samplePoints(from: nearby, to: end) == [end],
+            "moves within one step need no interpolation")
+
+        let fastStart = CGPoint(x: 100, y: 0)
+        let fastEnd = CGPoint(x: 100, y: 180)
+        let swept = HoverTrailPath.samplePoints(from: fastStart, to: fastEnd)
+        expect(swept.count == 10, "a 180pt vertical sweep produces 10 samples at 18pt spacing")
+        expect(swept.last == fastEnd, "the final sample always lands on the current pointer")
+
+        let huge = HoverTrailPath.samplePoints(
+            from: .zero, to: CGPoint(x: 0, y: 5000))
+        expect(
+            huge.count == HoverTrailPath.maxSteps,
+            "very long sweeps cap at maxSteps so hit-testing stays bounded")
     }
 }

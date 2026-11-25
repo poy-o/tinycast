@@ -120,7 +120,7 @@ private struct ChatHistoryRow: View {
         .background(
             RoundedRectangle(cornerRadius: metrics.radius.row, style: .continuous).fill(fill)
         )
-        .armedHover($hovered)
+        .armedHover($hovered, selected: selected)
     }
 }
 

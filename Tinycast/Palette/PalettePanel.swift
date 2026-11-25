@@ -20,10 +20,12 @@ final class PalettePanel: NSPanel, AnimatedPanel {
     var onHeaderFieldBoundaryArrow: ((HeaderFieldBoundary) -> Bool)?
     var onDismissMenu: (() -> Void)?
     private var dismissingMouseButton: Int?
+    let hoverTrail = HoverTrailController()
     /// Arms hover from `sendEvent`, the one place both event streams pass through.
     weak var paletteState: PaletteState? {
         didSet {
             paletteState?.onMenuOpenChanged = { [weak self] open in self?.setSearchCaretHidden(open) }
+            paletteState?.onHoverDisarmed = { [weak self] in self?.hoverTrail.clearImmediate() }
         }
     }
 
@@ -186,9 +188,12 @@ final class PalettePanel: NSPanel, AnimatedPanel {
         // Keys and scrolling both slide rows under the pointer without it choosing any of them.
         case .keyDown, .scrollWheel:
             paletteState?.disarmHoverHighlight(pointerAt: NSEvent.mouseLocation)
+            hoverTrail.clearImmediate()
             if event.type == .keyDown, event.modifierFlags.contains(.command) {
                 paletteState?.noteCommandChord()
             }
+        case .leftMouseDown, .rightMouseDown:
+            hoverTrail.clearImmediate()
         case .flagsChanged:
             paletteState?.noteCommandHeld(event.modifierFlags.contains(.command))
         default: break
@@ -235,6 +240,11 @@ final class PalettePanel: NSPanel, AnimatedPanel {
             return
         }
         super.sendEvent(event)
+        if event.type == .mouseMoved {
+            hoverTrail.handleMouseMoved(event, armed: paletteState?.hoverHighlightArmed == true)
+        } else if event.type == .mouseExited {
+            hoverTrail.handlePointerLeave(animated: true)
+        }
     }
 
     private func consumeMenuDismissal(_ event: NSEvent) -> Bool {
@@ -282,16 +292,19 @@ final class PalettePanel: NSPanel, AnimatedPanel {
         // The controller owns the frame; without this the top edge drifts on the swap.
         hosting.sizingOptions = []
         contentView = hosting
+        hoverTrail.attach(to: self)
     }
 
     /// Losing the keyboard is the last modifier news the panel gets; a re-show may skip `prepare`.
     override func resignKey() {
         super.resignKey()
+        hoverTrail.clearImmediate()
         paletteState?.noteCommandHeld(false)
     }
 
     /// A child hidden with its parent skips its next open animation.
     override func orderOut(_ sender: Any?) {
+        hoverTrail.clearImmediate()
         for child in childWindows ?? [] {
             removeChildWindow(child)
             child.orderOut(nil)
