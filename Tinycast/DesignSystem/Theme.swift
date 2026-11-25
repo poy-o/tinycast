@@ -351,8 +351,8 @@ enum Theme {
     }
 
     enum CompactBarMotion {
-        /// Under the 10pt gap, so resting buttons stand apart and only moving ones fuse.
-        static let blend: CGFloat = 8
+        /// Just under the 10pt gap so the bubble group stretches off the capsule then separates cleanly.
+        static let blend: CGFloat = 9
         /// Parked inside the capsule's end this small, so each button pinches out of it.
         static let parkedScale: CGFloat = 0.36
         /// One button after another, beaded off the capsule.

@@ -940,7 +940,9 @@ final class AppSettings {
             defaults.object(forKey: Key.openOnCursorScreen.rawValue) == nil
             || defaults.bool(forKey: Key.openOnCursorScreen.rawValue)
         autoSwitchInputSourceID = defaults.string(forKey: Key.autoSwitchInputSource.rawValue)
-        paletteDraggable = defaults.bool(forKey: Key.paletteDraggable.rawValue)
+        paletteDraggable =
+            defaults.object(forKey: Key.paletteDraggable.rawValue) == nil
+            || defaults.bool(forKey: Key.paletteDraggable.rawValue)
         animationsEnabled =
             defaults.object(forKey: Key.animationsEnabled.rawValue) == nil
             || defaults.bool(forKey: Key.animationsEnabled.rawValue)
